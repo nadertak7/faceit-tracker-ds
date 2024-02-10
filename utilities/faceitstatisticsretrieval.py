@@ -31,6 +31,9 @@ class RetrieveFaceitData:
 
         Raises:
             Exception: If the player is not found or an error occurs during the request.
+        
+        Returns: 
+            status_code (int): The status code of the response. 
         """
         # Set GET request args
         headers = {
@@ -57,10 +60,10 @@ class RetrieveFaceitData:
                 raise Exception("Player was not found. Please ensure the nickname entered is correct.")
             else:
                 raise Exception("Something went wrong.")
-      
         except Exception as exception:
             st.error(f"An error occurred: {exception}")
-
+        return response_api.status_code
+    
     def retrieve_statistics(self):
         """
         Retrieve statistics from the response obtained from the Faceit API.
