@@ -15,17 +15,18 @@ class RetrieveFaceitData:
     # Load secrets
     load_dotenv()
  
-    # Initialise instance variables  
+    # Initialise instance variables
     def __init__(self, faceit_name):
         """
         Initialise the RetrieveFaceitData object.
 
         Parameters:
             faceit_name (str): The Faceit username for which data will be retrieved.
+            endpoint_prefix (str): The Faceit endpoint selected to retrieve data from.
         """
         self.faceit_name = faceit_name
 
-    def request_data(self):
+    def request_data(self, endpoint_prefix):
         """
         Send a GET request to the Faceit API to retrieve player data.
 
@@ -43,7 +44,7 @@ class RetrieveFaceitData:
             "accept": "application/json"
         }
 
-        endpoint = f"https://open.faceit.com/data/v4/players?nickname={self.faceit_name}"
+        endpoint = endpoint_prefix + self.faceit_name
 
         # GET request
         try:

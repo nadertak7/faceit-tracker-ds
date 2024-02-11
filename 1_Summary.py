@@ -19,13 +19,14 @@ with st.container():
 
         if user_input:
             # Instantiate class from utilities/faceitstatsretrieval.py
-            faceit_data = RetrieveFaceitData(user_input)
+            player_data = RetrieveFaceitData(user_input)
             # Trigger request_data method and determine whether
             # response is successful
-            response_status = faceit_data.request_data()
+            response_status = player_data.request_data("https://open.faceit.com/data/v4/players?nickname=")
             if response_status == 200:
-                player_statistics = faceit_data.retrieve_statistics()
+                player_statistics = player_data.retrieve_statistics()
                 # Display Metrics
                 left_metric_column, right_metric_column = st.columns(2)
                 left_metric_column.metric("Elo", str(player_statistics.get("elo")))
                 right_metric_column.metric("Faceit Level", str(player_statistics.get("skill-level")))
+            # Error handling done in RetrieveFaceitData class
