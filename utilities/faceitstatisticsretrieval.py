@@ -22,13 +22,15 @@ class RetrieveFaceitData:
 
         Parameters:
             faceit_name (str): The Faceit username for which data will be retrieved.
-            endpoint_prefix (str): The Faceit endpoint selected to retrieve data from.
         """
         self.faceit_name = faceit_name
 
     def request_data(self, endpoint_prefix):
         """
         Send a GET request to the Faceit API to retrieve player data.
+
+        Parameters:
+            endpoint_prefix (str): The Faceit endpoint selected to retrieve data from.
 
         Raises:
             Exception: If the player is not found or an error occurs during the request.
