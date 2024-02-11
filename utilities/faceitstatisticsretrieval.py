@@ -79,7 +79,7 @@ class RetrieveFaceitData:
         )
 
         player_statistics = {
-            "skill-level": cs2_player_data.get('skill_level', {}),
-            "elo": cs2_player_data.get('faceit_elo', {})
+            "skill-level": cs2_player_data.get('skill_level', 0),
+            "elo": cs2_player_data.get('faceit_elo', 0)
         }
         return player_statistics

@@ -25,7 +25,7 @@ with st.container():
             response_status = faceit_data.request_data()
             if response_status == 200:
                 player_statistics = faceit_data.retrieve_statistics()
-
+                # Display Metrics
                 left_metric_column, right_metric_column = st.columns(2)
-                left_metric_column.metric("Elo", player_statistics.get("elo"))
-                right_metric_column.metric("Faceit Level", player_statistics.get("skill-level"))
+                left_metric_column.metric("Elo", str(player_statistics.get("elo")))
+                right_metric_column.metric("Faceit Level", str(player_statistics.get("skill-level")))
