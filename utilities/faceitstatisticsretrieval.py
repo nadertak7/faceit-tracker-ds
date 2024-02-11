@@ -82,7 +82,9 @@ class RetrieveFaceitData:
         )
 
         player_statistics = {
+            "nickname": player_summary.get('nickname'),
             "skill-level": cs2_player_data.get('skill_level', 0),
-            "elo": cs2_player_data.get('faceit_elo', 0)
+            "elo": cs2_player_data.get('faceit_elo', 0),
+            "avatar-image": player_summary.get('avatar')
         }
         return player_statistics

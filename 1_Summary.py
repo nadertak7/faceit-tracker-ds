@@ -22,9 +22,18 @@ with st.container():
             player_data = RetrieveFaceitData(user_input)
             # Trigger request_data method and determine whether
             # response is successful
-            response_status = player_data.request_data("https://open.faceit.com/data/v4/players?nickname=")
+            response_status = player_data.request_data(
+                endpoint_prefix="https://open.faceit.com/data/v4/players?nickname="
+            )
             if response_status == 200:
                 player_statistics = player_data.retrieve_statistics()
+                # Display account information
+                left_account_info_column, right_account_info_column = st.columns([0.5, 0.5])
+                left_account_info_column.write(f"Faceit Username: {player_statistics.get("nickname")}")
+                try: 
+                    right_account_info_column.image(player_statistics.get("avatar-image"), width=200)
+                except:
+                    right_account_info_column.image('./resources/steamdefault.png', width=200)
                 # Display Metrics
                 left_metric_column, right_metric_column = st.columns(2)
                 left_metric_column.metric("Elo", str(player_statistics.get("elo")))
