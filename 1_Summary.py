@@ -29,13 +29,17 @@ with st.container():
                 player_statistics = player_data.retrieve_statistics()
                 # Display account information
                 left_account_info_column, right_account_info_column = st.columns([0.5, 0.5])
-                left_account_info_column.write(f"Faceit Username: {player_statistics.get("nickname")}")
-                try:
-                    right_account_info_column.image(player_statistics.get("avatar-image"), width=200)
-                except:
-                    right_account_info_column.image('./resources/steamdefault.png', width=200)
+                with left_account_info_column:
+                    st.write(f"Faceit Username: {player_statistics.get("nickname")}")
+                with right_account_info_column:
+                    try:
+                        st.image(player_statistics.get("avatar-image"), width=200)
+                    except:
+                        st.image('./resources/steamdefault.png', width=200)
                 # Display Metrics
                 left_metric_column, right_metric_column = st.columns(2)
-                left_metric_column.metric("Elo", str(player_statistics.get("elo")))
-                right_metric_column.metric("Faceit Level", str(player_statistics.get("skill-level")))
+                with left_metric_column:
+                    st.metric("Elo", str(player_statistics.get("elo")))
+                with right_metric_column:
+                    st.metric("Faceit Level", str(player_statistics.get("skill-level")))
             # Error handling done in RetrieveFaceitData class
