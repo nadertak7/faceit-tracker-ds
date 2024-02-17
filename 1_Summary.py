@@ -1,5 +1,5 @@
 import streamlit as st
-from utilities import pageelements
+from utilities import pageelements, statsmanipulation
 from utilities.faceitstatisticsretrieval import RetrieveFaceitData
 
 # Set config
@@ -31,6 +31,7 @@ with st.container():
                 left_account_info_column, right_account_info_column = st.columns([0.5, 0.5])
                 with left_account_info_column:
                     st.write(f"Faceit Username: {player_statistics.get("nickname")}")
+                    st.write(f"Account Age: {statsmanipulation.retrieve_account_age(player_statistics.get("account_activated_timestamp"))}")
                 with right_account_info_column:
                     try:
                         st.image(player_statistics.get("avatar-image"), width=200)

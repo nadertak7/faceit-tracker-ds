@@ -85,6 +85,7 @@ class RetrieveFaceitData:
             "nickname": player_summary.get('nickname'),
             "skill-level": cs2_player_data.get('skill_level', 0),
             "elo": cs2_player_data.get('faceit_elo', 0),
-            "avatar-image": player_summary.get('avatar')
+            "avatar-image": player_summary.get('avatar'),
+            "account_activated_timestamp": player_summary.get('activated_at')
         }
         return player_statistics
