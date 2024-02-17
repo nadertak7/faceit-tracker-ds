@@ -7,14 +7,14 @@ st.set_page_config(page_title = "Email Sender", layout = "wide")
 
 # Page contents
 with st.container():
-    left_column, middle_column, right_column = st.columns([0.2, 0.4, 0.4])
+    left_column, middle_column, right_column = st.columns([0.2, 0.6, 0.2])
     with middle_column:
         # Header
         st.header("Faceit Stats DS")
         pageelements.large_vertical_space(1)
 
         # User Input
-        user_input = st.text_input("Enter Faceit Nickname:")
+        user_input = st.text_input("Enter Faceit Nickname:", max_chars=12)
         pageelements.small_vertical_space(1)
 
         if user_input:
@@ -30,7 +30,7 @@ with st.container():
                 # Display account information
                 left_account_info_column, right_account_info_column = st.columns([0.5, 0.5])
                 left_account_info_column.write(f"Faceit Username: {player_statistics.get("nickname")}")
-                try: 
+                try:
                     right_account_info_column.image(player_statistics.get("avatar-image"), width=200)
                 except:
                     right_account_info_column.image('./resources/steamdefault.png', width=200)
