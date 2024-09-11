@@ -18,29 +18,4 @@ with st.container():
         pageelements.small_vertical_space(1)
 
         if user_input:
-            # Instantiate class from utilities/faceitstatsretrieval.py
-            player_data = RetrieveFaceitData(user_input)
-            # Trigger request_data method and determine whether
-            # response is successful
-            response_status = player_data.request_data(
-                endpoint_prefix="https://open.faceit.com/data/v4/players?nickname="
-            )
-            if response_status == 200:
-                player_statistics = player_data.retrieve_statistics()
-                # Display account information
-                left_account_info_column, right_account_info_column = st.columns([0.5, 0.5])
-                with left_account_info_column:
-                    st.write(f"Faceit Username: {player_statistics.get("nickname")}")
-                    st.write(f"Account Age: {statsmanipulation.retrieve_account_age(player_statistics.get("account_activated_timestamp"))}")
-                with right_account_info_column:
-                    try:
-                        st.image(player_statistics.get("avatar-image"), width=200)
-                    except:
-                        st.image('./resources/steamdefault.png', width=200)
-                # Display Metrics
-                left_metric_column, right_metric_column = st.columns(2)
-                with left_metric_column:
-                    st.metric("Elo", str(player_statistics.get("elo")))
-                with right_metric_column:
-                    st.metric("Faceit Level", str(player_statistics.get("skill-level")))
-            # Error handling done in RetrieveFaceitData class
+            
