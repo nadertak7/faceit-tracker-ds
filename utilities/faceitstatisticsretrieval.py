@@ -8,6 +8,11 @@ from glom import glom
 import streamlit as st
 
 @dataclass
+class FaceitEndpoints:
+    player_info: str = "https://open.faceit.com/data/v4/players?nickname={nickname}"
+    player_bans: str = "https://open.faceit.com/data/v4/players/{player_id}/bans"
+
+@dataclass
 class ApiArguments:
     headers: Dict[str, str]
     endpoint: str
@@ -20,14 +25,14 @@ class PlayerInformation:
     num_friends: int
     is_verified: bool
     skill_level: int
-    elo: int = 0
-    num_bans: int = 0
+    elo: int
 
 @dataclass
 class PlayerBanInformation:
     is_banned: bool
     is_smurf: bool
     num_bans: int
+    ban_response: dict
 
 class FaceitDataRetrieval:
     def __init__(
@@ -36,13 +41,17 @@ class FaceitDataRetrieval:
     ) -> None:
         self.faceit_nickname = faceit_nickname
         self.headers = self._initialise_api()
-        self.player_data = self._request_data(f"""
-            https://open.faceit.com/data/v4/players?nickname={self.faceit_nickname}
-        """)
+        self.player_data = (self
+            ._request_data(FaceitEndpoints.player_info
+                .format(nickname=self.faceit_nickname)
+            )
+        )
         self.player_id = self.player_data.get("player_id")
-        self.player_ban_data = self._request_data(f"""
-            https://open.faceit.com/data/v4/players/{self.player_id}/bans
-        """)
+        self.player_ban_data = (self
+            ._request_data(FaceitEndpoints.player_bans
+                .format(player_id=self.player_id)
+            )
+        )
 
     @staticmethod
     def _initialise_api() -> Dict[str, str]:
@@ -50,15 +59,15 @@ class FaceitDataRetrieval:
         load_dotenv()
         # The SERVER_KEY environment variable was generated at:
         # https://developers.faceit.com/apps > select app > api keys > create server side api key
-        bearer = os.getenv("SERVER_KEY")
-        if not bearer:
+        BEARER = os.getenv("SERVER_KEY")
+        if not BEARER:
             raise KeyError("Environment variable 'SERVER_KEY' does not exist")
 
-        headers = {
-            "Authorization": f"Bearer {bearer}",
+        HEADERS = {
+            "Authorization": f"Bearer {BEARER}",
             "accept": "application/json"
         }
-        return headers
+        return HEADERS
 
     def _request_data(
             self,
@@ -66,7 +75,7 @@ class FaceitDataRetrieval:
     ) -> requests.Response:
         try:
             response_api = requests.get(
-                endpoint,
+                endpoint.strip(),
                 headers=self.headers,
                 timeout=20
             )
@@ -92,12 +101,11 @@ class FaceitDataRetrieval:
             elo=glom(self.player_data, "games.cs2.faceit_elo", default=0)
         )
 
-    # TODO: Basic preliminary model. Needs investigation.
-    # def player_data_ban_store(self) -> PlayerBanInformation:
-    #     return PlayerBanInformation(
-    #         is_banned=True if glom(self.player_ban_data, "items", default=None) else False,
-    #         is_smurf=True if glom(self.player_ban_data, "items", default=None) else False,
-    #         num_bans=len(self.player_ban_data.get("items", []))
-    #     )
-
-# print(FaceitDataRetrieval("nadumtax").player_data_ban_store())
+    def player_data_ban_store(self) -> PlayerBanInformation:
+        player_ban_items = self.player_ban_data.get("items", [])
+        return PlayerBanInformation(
+            is_banned=False if len(player_ban_items) == 0 else True,
+            is_smurf=any(item.get("reason") == "smurfing" for item in player_ban_items),
+            num_bans=len(player_ban_items),
+            ban_response=player_ban_items
+        )
