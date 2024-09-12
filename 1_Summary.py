@@ -1,8 +1,9 @@
 import streamlit as st
 from utilities import pageelements
+from utilities.faceitstatisticsretrieval import FaceitDataRetrieval
 
 # Set config
-st.set_page_config(page_title = "Email Sender", layout = "wide")
+st.set_page_config(page_title = "Faceit Tracker DS", layout = "wide")
 
 # Page contents
 with st.container():
@@ -17,4 +18,4 @@ with st.container():
         pageelements.small_vertical_space(1)
 
         if user_input:
-            pass
+            FaceitDataRetrieval(user_input).player_data_store()

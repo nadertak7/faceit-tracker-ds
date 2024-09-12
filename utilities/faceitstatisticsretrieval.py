@@ -3,11 +3,9 @@ import os
 import requests
 from typing import Dict, Optional
 
-
 from dotenv import load_dotenv
 from glom import glom
 import streamlit as st
-
 
 @dataclass
 class ApiArguments:
@@ -16,12 +14,20 @@ class ApiArguments:
 
 @dataclass
 class PlayerInformation:
+    player_id: str
     nickname: str
     avatar: str
-    skill_level: Optional[int] = None
-    elo: Optional[int] = None
-    num_friends = int
-    is_verified = bool
+    num_friends: int
+    is_verified: bool
+    skill_level: int
+    elo: int = 0
+    num_bans: int = 0
+
+@dataclass
+class PlayerBanInformation:
+    is_banned: bool
+    is_smurf: bool
+    num_bans: int
 
 class FaceitDataRetrieval:
     def __init__(
@@ -29,11 +35,18 @@ class FaceitDataRetrieval:
         faceit_nickname
     ) -> None:
         self.faceit_nickname = faceit_nickname
-        self.api_arguments = self._initialise_api()
-        self.response = self._request_data()
+        self.headers = self._initialise_api()
+        self.player_data = self._request_data(f"""
+            https://open.faceit.com/data/v4/players?nickname={self.faceit_nickname}
+        """)
+        self.player_id = self.player_data.get("player_id")
+        self.player_ban_data = self._request_data(f"""
+            https://open.faceit.com/data/v4/players/{self.player_id}/bans
+        """)
 
-    def _initialise_api(self) -> ApiArguments:
-        # Handle server key        
+    @staticmethod
+    def _initialise_api() -> Dict[str, str]:
+        # Handle server key
         load_dotenv()
         # The SERVER_KEY environment variable was generated at:
         # https://developers.faceit.com/apps > select app > api keys > create server side api key
@@ -45,48 +58,46 @@ class FaceitDataRetrieval:
             "Authorization": f"Bearer {bearer}",
             "accept": "application/json"
         }
-        ENDPOINT = f"https://open.faceit.com/data/v4/players?nickname={self.faceit_nickname}"
+        return headers
 
-        api_arguments = ApiArguments(
-            headers=headers,
-            endpoint=ENDPOINT
-        )
-        return api_arguments
-    
     def _request_data(
-            self
+            self,
+            endpoint
     ) -> requests.Response:
         try:
             response_api = requests.get(
-                self.api_arguments.endpoint,
-                self.api_arguments.headers,
+                endpoint,
+                headers=self.headers,
                 timeout=20
             )
+            response_api.raise_for_status()
         except requests.exceptions.HTTPError as http_error:
             st.error(f"Http Error: {http_error}")
         except requests.exceptions.ConnectionError as conn_error:
             st.error(f"Error Connecting: {conn_error}")
         except requests.exceptions.Timeout as timeout_error:
-            print (f"Timeout Error: {timeout_error}")
+            st.error(f"Timeout Error: {timeout_error}")
         except requests.exceptions.RequestException as req_error:
-            print (f"An Error Occurred: {req_error}")
-        return response_api
+            st.error(f"An Error Occurred: {req_error}")
+        return response_api.json()
 
-    def wrangle_player_data(
-            self
-    ):
-        player_summary = self.response.json()
-
-        player_information = PlayerInformation(
-            nickname=player_summary.get("nickname"),
-            avatar=player_summary.get("avatar"),
-            skill_level=glom(player_summary, "games.cs2.skill_level"),
-            elo=glom(player_summary, "games.cs2.faceit_elo")
-            num_friends=len(player_summary.get("friends_ids")),
-            is_verified=player_summary.get("verified")
+    def player_data_store(self) -> PlayerInformation:
+        return PlayerInformation(
+            player_id=self.player_data.get("player_id"),
+            nickname=self.player_data.get("nickname"),
+            avatar=self.player_data.get("avatar"),
+            num_friends=len(self.player_data.get("friends_ids", [])),
+            is_verified=self.player_data.get("verified"),
+            skill_level=glom(self.player_data, "games.cs2.skill_level", default=0),
+            elo=glom(self.player_data, "games.cs2.faceit_elo", default=0)
         )
-        return player_information
 
+    # TODO: Basic preliminary model. Needs investigation.
+    # def player_data_ban_store(self) -> PlayerBanInformation:
+    #     return PlayerBanInformation(
+    #         is_banned=True if glom(self.player_ban_data, "items", default=None) else False,
+    #         is_smurf=True if glom(self.player_ban_data, "items", default=None) else False,
+    #         num_bans=len(self.player_ban_data.get("items", []))
+    #     )
 
-
-FaceitDataRetrieval("hellotest")
+# print(FaceitDataRetrieval("nadumtax").player_data_ban_store())
