@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 import os
-import requests
-from typing import Dict, Optional
+from typing import Dict
 
 from dotenv import load_dotenv
 from glom import glom
+import requests
 import streamlit as st
 
 @dataclass
@@ -59,15 +59,15 @@ class FaceitDataRetrieval:
         load_dotenv()
         # The SERVER_KEY environment variable was generated at:
         # https://developers.faceit.com/apps > select app > api keys > create server side api key
-        BEARER = os.getenv("SERVER_KEY")
-        if not BEARER:
+        bearer = os.getenv("SERVER_KEY")
+        if not bearer:
             raise KeyError("Environment variable 'SERVER_KEY' does not exist")
 
-        HEADERS = {
-            "Authorization": f"Bearer {BEARER}",
+        headers = {
+            "Authorization": f"bearer {bearer}",
             "accept": "application/json"
         }
-        return HEADERS
+        return headers
 
     def _request_data(
             self,
