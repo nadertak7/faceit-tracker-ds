@@ -1,7 +1,7 @@
 from pydantic import BaseModel, field_validator, ValidationError
 import streamlit as st
 from utilities import pageelements
-from utilities.faceitstatisticsretrieval import FaceitDataRetrieval
+from services.faceitstatisticsretrieval import FaceitDataRetrieval
 
 class PlayerInput(BaseModel):
     player_name: str
@@ -40,5 +40,3 @@ with st.container():
             except ValidationError as validation_error:
                 # TODO: Add log validation_error.errors()[0]['msg']
                 pass
-
-            FaceitDataRetrieval(user_input).player_data_store()
