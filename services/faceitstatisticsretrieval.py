@@ -52,6 +52,7 @@ class PlayerStatisticsAllTimeData:
     avg_4_kills: float
     avg_5_kills: float
     perc_winrate: float
+    avg_score_diff: float
 
 @dataclass
 class PlayerStatisticsLast20Data:
@@ -65,6 +66,7 @@ class PlayerStatisticsLast20Data:
     avg_4_kills: float
     avg_5_kills: float
     perc_winrate: float
+    avg_score_diff: float
 
 @dataclass
 class PlayerStatisticsFirst10Data:
@@ -78,6 +80,7 @@ class PlayerStatisticsFirst10Data:
     avg_4_kills: float
     avg_5_kills: float
     perc_winrate: float
+    avg_score_diff: float
 
 class FaceitDataRetrieval:
     def __init__(
@@ -180,6 +183,7 @@ class FaceitDataRetrieval:
         return match_stats
 
     def player_data_stats_all_time_store(self):
+        print(calculate_stats(self.all_cs_game_stats))
         return PlayerStatisticsAllTimeData(self.player_id, **calculate_stats(self.all_cs_game_stats))
     
     def player_data_stats_last_20_store(self):
@@ -191,4 +195,3 @@ class FaceitDataRetrieval:
         return PlayerStatisticsFirst10Data(self.player_id, **calculate_stats(first_10_cs_game_stats))
 
 print(FaceitDataRetrieval("NadseN").player_data_stats_all_time_store())
-
