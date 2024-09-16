@@ -87,7 +87,7 @@ class PlayerStatisticsFirst10Data:
     perc_winrate: float
     avg_score_diff: float
 
-class FaceitDataRetrieval:
+class PlayerFaceitDataRetrieval:
     """Handles the retrieval of a player's Faceit data"""
     def __init__(
         self,
@@ -111,8 +111,8 @@ class FaceitDataRetrieval:
                 .format(player_id=self.player_id)
             )
         )
-        self.player_cs2_game_stats = self.fetch_cs_game_stats("cs2")
-        self.player_csgo_game_stats = self.fetch_cs_game_stats("csgo")
+        self.player_cs2_game_stats = self._request_faceit_match_data("cs2")
+        self.player_csgo_game_stats = self._request_faceit_match_data("csgo")
         self.all_cs_game_stats = self.player_cs2_game_stats + self.player_csgo_game_stats
 
     @staticmethod
@@ -194,7 +194,7 @@ class FaceitDataRetrieval:
             ban_response=player_ban_items
         )
 
-    def fetch_cs_game_stats(self, game_id: str) -> Dict:
+    def _request_faceit_match_data(self, game_id: str) -> Dict:
         """Handles paginated stats data"""
         match_stats = []
         # Endpoint fetches results {limit} at a time
@@ -232,4 +232,4 @@ class FaceitDataRetrieval:
         first_10_cs_game_stats = self.all_cs_game_stats[-len(self.all_cs_game_stats):-len(self.all_cs_game_stats) + 10]
         return PlayerStatisticsFirst10Data(self.player_id, **calculate_stats(first_10_cs_game_stats))
 
-print(FaceitDataRetrieval("NadseN").player_data_store())
+print(PlayerFaceitDataRetrieval("nadysen").player_data_store())

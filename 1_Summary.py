@@ -1,7 +1,7 @@
 from pydantic import BaseModel, field_validator, ValidationError
 import streamlit as st
 from utilities import pageelements
-from services.faceitstatisticsretrieval import FaceitDataRetrieval
+from services.faceitplayerstatistics import PlayerFaceitDataRetrieval
 
 class PlayerInput(BaseModel):
     player_name: str
@@ -25,7 +25,7 @@ with st.container():
     with middle_column:
         # Header
         st.header("Faceit Stats DS")
-        pageelements.large_vertical_space(1)
+        pageelements.small_vertical_space(1)
 
         # User Input
         user_input = player_name = st.text_input(
