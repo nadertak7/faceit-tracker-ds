@@ -25,6 +25,7 @@ class FaceitEndpoints:
 class PlayerInformationData:
     """A store for information about the player"""
     player_id: str
+    steam_id: int
     nickname: str
     avatar: str
     num_friends: int
@@ -174,6 +175,7 @@ class PlayerFaceitDataRetrieval:
         """Inserts the player's information into the PlayerInformationData dataclass"""
         return PlayerInformationData(
             player_id=self.player_data.get("player_id"),
+            steam_id=self.player_data.get("steam_id_64"),
             nickname=self.player_data.get("nickname"),
             avatar=self.player_data.get("avatar"),
             num_friends=len(self.player_data.get("friends_ids", [])),
